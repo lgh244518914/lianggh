@@ -3,6 +3,7 @@ import re
 import requests
 import zipfile
 import pandas as pd
+import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 
 BASE_URL = "https://data.binance.vision/"
@@ -20,10 +21,28 @@ class BinanceDataAPI:
         for folder in folders:
             self._process_data(folder, target_date)
 
+    # def _get_usdt_folders(self):
+    #     """获取所有以 USDT 结尾的文件夹."""
+    #     url = f"{BASE_URL}?prefix={PREFIX}"
+    #     response = requests.get(url)
+    #     if response.status_code != 200:
+    #         raise Exception("无法访问目标网址")
+    #
+    #     soup = BeautifulSoup(response.text, "html.parser")
+    #     usdt_folders = []
+    #     for link in soup.find_all("a"):
+    #         href = link.get("href")
+    #         # 筛选符合 USDT 文件夹规则的链接
+    #         if href and href.endswith("USDT/"):
+    #             usdt_folders.append(href)
+    #
+    #     print(f"发现文件夹: {usdt_folders}")
+    #     return usdt_folders
+
     def _get_usdt_folders(self):
         """获取所有以 USDT 结尾的文件夹."""
         url = f"{BASE_URL}?prefix={PREFIX}"
-        response = requests.get(url)
+        response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
         if response.status_code != 200:
             raise Exception("无法访问目标网址")
 
@@ -31,7 +50,6 @@ class BinanceDataAPI:
         usdt_folders = []
         for link in soup.find_all("a"):
             href = link.get("href")
-            # 筛选符合 USDT 文件夹规则的链接
             if href and href.endswith("USDT/"):
                 usdt_folders.append(href)
 
